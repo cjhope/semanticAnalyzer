@@ -27,6 +27,7 @@ public class DataMap extends HashMap<MapPair, LinkedList<Document>>{
 		final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		Calendar startDate = new GregorianCalendar(2015, Calendar.MARCH, 24);
 		Calendar endDate = new GregorianCalendar();
+		Date d = new Date();
 		return new Iterator(){
 			
 			int i = 0;
@@ -38,7 +39,7 @@ public class DataMap extends HashMap<MapPair, LinkedList<Document>>{
 				if( startDate.before(endDate) ){
 					//date range is correct
 					//now check if the company is is at end
-					i++;
+					
 					if( i < companyList.length ){
 						
 						return true;
@@ -57,12 +58,13 @@ public class DataMap extends HashMap<MapPair, LinkedList<Document>>{
 			}
 
 			@Override
-			public LinkedList next() {
+			public MapPair next() {
 				// TODO Auto-generated method stub
 				MapPair mp = new MapPair(startDate, companyList[i]);
+				i++;
 				if(Main.fullDataSet.containsKey(mp)){
-					LinkedList l = Main.fullDataSet.get(mp);
-					return l;
+					//LinkedList l = Main.fullDataSet.get(mp);
+					return mp;
 				}else
 					return null;
 				

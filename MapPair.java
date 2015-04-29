@@ -6,10 +6,12 @@ public class MapPair {
 
 	Calendar dateCreated;
 	String company;
+	int totalSentiment;
 	
 	public MapPair(Calendar date, String company){
 		this.dateCreated = date;
 		this.company = company;
+		this.totalSentiment = 0;
 	}
 
 	@Override

@@ -63,14 +63,14 @@ public class Main {
 		Calendar testDate;
 		testDate = new GregorianCalendar(2015, Calendar.MARCH, 25);
 		MapPair test2 = new MapPair(testDate, doc.company);
-		System.out.println(test.equals(test2));
+		//System.out.println(test.equals(test2));
 		if(fullDataSet.containsKey(test)){
-			System.out.println("contained key");
+			//System.out.println("contained key");
 			LinkedList<Document> newList = fullDataSet.get(test);
 			newList.add(doc);
 
 		} else{
-			System.out.println("did NOT contain key");
+			//System.out.println("did NOT contain key");
 			LinkedList<Document> newList = new LinkedList<Document>();
 			newList.add(doc);
 			fullDataSet.put(test, newList);
@@ -95,6 +95,8 @@ public class Main {
 		final Calendar theDate = new GregorianCalendar(2015, Calendar.MARCH, 25);
 		final Lock locker = new ReentrantLock();
 		locker.lock();
+		int positive = 0;
+		int negative = 0;
 		
 		File inputFileFolder = new File("data");
 		File[] fileList = inputFileFolder.listFiles();
@@ -133,7 +135,7 @@ public class Main {
 								while( (theWholeStringManLikeWhoa = bReader.readLine()) != null){
 									unit = theWholeStringManLikeWhoa.split("::::");
 									//now iterate over all units - each unit has 5 elements, so increment by 5
-									for(int i = 0; i < 15; i = i+5){
+									for(int i = 0; i < 225; i = i+5){
 										//grab and parse each element
 										System.out.println("running " + (i/5 + 1));
 										company = unit[i+0];
@@ -213,14 +215,19 @@ public class Main {
 		Iterator it = fullDataSet.iterator();
 		while(it.hasNext()){
 			
-			LinkedList iterTest = (LinkedList) it.next();
-			
+			MapPair tempMapPair = (MapPair) it.next();
+			LinkedList iterTest = fullDataSet.get(tempMapPair);
 			if(iterTest != null){
-				System.out.println("Iterator returned something");
+				//System.out.println("Iterator returned something");
 				Iterator listIter = iterTest.iterator();
 				while(listIter.hasNext()){
-					System.out.println((Document)listIter.next());
+					Document temp = (Document) listIter.next();
+					//System.out.println(temp.text + "\n" + temp.sentiment);
+					tempMapPair.totalSentiment += temp.sentiment;
 				}
+				System.out.println("For company " + tempMapPair.company + "\tOn day " + tempMapPair.dateCreated);
+				System.out.println("Sentiment is " + tempMapPair.totalSentiment);
+				System.out.println("---------------------------------------");
 			}
 		}
 		

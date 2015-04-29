@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
+
 public class Document {
 
 	String user;
@@ -21,15 +22,15 @@ public class Document {
 	 * SentimentGivenWordsInDocument = 1/3 * probWord1InDictionary * probWord2InDictionary * ... * probWordnInDictionary
 	 * @return - Sentiment value: +1 for positive, 0 for neutral, -1 for negative
 	 */
-	public int calculateSentiment(){
+	public void calculateSentiment(){
 	
 		double probSent = (1.0/3.0);  //Positive, negative, or neutral sentiments possible
 		double posProb = probSent, negProb = probSent;  //Probabilities to compare
 		Boolean posFlag = false, negFlag = false;
 		
 		/*Create Dictionaries*/
-		Dictionary posDictionary = new Dictionary( "PositiveDictionary.txt");
-		Dictionary negDictionary = new Dictionary( "NegativeDictionary.txt");
+		Dictionary posDictionary = new Dictionary( "src/PositiveDictionary.txt");
+		Dictionary negDictionary = new Dictionary( "src/NegativeDictionary.txt");
 		
 		/*For every word in the tweet (wordList), get it's probability of appearing in each of the two 
 		 * dictionaries. Multiply all probabilities for each dictionary. If a word appears more than once
@@ -38,8 +39,10 @@ public class Document {
 			int count = entry.getValue().getCount();
 			while( count >= 1){
 				if( posDictionary.getProbability( entry.getKey()) != 0.0){  /////////////////DON'T USE A PROB=0???????????
-					posProb *= posDictionary.getProbability( entry.getKey()); 
+					posProb *= posDictionary.getProbability( entry.getKey() ); 
 					posFlag = true;
+					//System.out.println("Word being looked at is: " + entry.getKey());
+					
 				}
 				if( negDictionary.getProbability( entry.getKey()) != 0.0){
 					negProb *= negDictionary.getProbability( entry.getKey());
@@ -47,6 +50,7 @@ public class Document {
 				}						
 				count--;
 			}	
+
 		}
 		/*Since we initialized them to 1/3, if NO words were found in that dictionary, 
 		 * we want the probability to be 0, not 1/3.*/
@@ -56,22 +60,32 @@ public class Document {
 		if( negFlag == false){
 			negProb = 0.0;
 		}
+		
+		//System.out.println("Pos prob = " + posProb);
+		//System.out.println("Neg prob = " + negProb);
+		
 		/*Choose the higher probability*/
 		if( posProb > negProb){
-			return 1;
+			//System.out.println("returned 1");
+			this.sentiment = 1;
+			return;
 		}
 		else if( negProb > posProb){
-			return -1;
+			//System.out.println("returned -1");
+			this.sentiment = -1;
+			return;
 		}
 		else{
-			return 0;
+			//System.out.println("returned 0");
+			this.sentiment = 0;
+			return;
 		}
 	}
 	
 	public Document(String theUser, Calendar theDate, String theCompany, String theText, String theTweetID){
 		this.user = theUser;
 		this.dateCreated = theDate;
-		this.text = theText;
+		this.text = theText.toLowerCase();
 		this.tweetID = theTweetID;
 		this.sentiment = 0;
 		this.buildWordList();
@@ -114,7 +128,7 @@ public class Document {
 	}
 	
 	public String toString(){
-		return this.company + "\n" + this.user + "\n" + this.tweetID + "\n" + this.dateCreated + "\n" + this.text;
+		return this.company + "\n" + this.user + "\n" + this.tweetID  + "\n" + this.text;
 	}
 	
 	public void setProbability(){

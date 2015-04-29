@@ -97,6 +97,8 @@ public class Dictionary extends HashMap< String, Integer>{
 //		double prob = Double.MIN_VALUE;  // TOO MANY VERY SMALL VALUES MAKES PROBABILITY TINY. DON'T USE PROBABILITIES = 0.0 ???????? 
 		double prob = 0.0;
 		
+		word = word.toLowerCase();
+		
 		if( this.containsKey( word)){
 			prob = ( (double) ((int)this.get( word)) / this.totalWords);
 		}
@@ -154,8 +156,8 @@ public class Dictionary extends HashMap< String, Integer>{
 	public static void main( String a[]){
 		
 		
-		Dictionary negDict = new Dictionary( "NegativeDictionary.txt");  //"more negative reviews tagged"//		
-		Dictionary posDict = new Dictionary( "PositiveDictionary.txt");  //"more positive reviews tagged" //80 words total (counting duplicates as separate)
+		Dictionary negDict = new Dictionary( "src/NegativeDictionary.txt");  //"more negative reviews tagged"//		
+		Dictionary posDict = new Dictionary( "src/PositiveDictionary.txt");  //"more positive reviews tagged" //80 words total (counting duplicates as separate)
 		
 //		System.out.println( "Sentiment = " + posDict.calculateSentiment());
 //		System.out.println( "Sentiment = " + negDict.calculateSentiment());
