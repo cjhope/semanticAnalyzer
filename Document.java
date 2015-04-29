@@ -1,5 +1,6 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -7,7 +8,7 @@ import java.util.HashMap;
 public class Document {
 
 	String user;
-	Date dateCreated;
+	Calendar dateCreated;
 	String text;
 	HashMap<String, WordInformation> wordList;
 	String tweetID;
@@ -19,7 +20,7 @@ public class Document {
 		//Stub method -- implement TODO here
 	}
 	
-	public Document(String theUser, Date theDate, String theCompany, String theText, String theTweetID){
+	public Document(String theUser, Calendar theDate, String theCompany, String theText, String theTweetID){
 		this.user = theUser;
 		this.dateCreated = theDate;
 		this.text = theText;
@@ -62,6 +63,10 @@ public class Document {
 			System.err.println("failed again");
 		}
 		return;
+	}
+	
+	public String toString(){
+		return this.company + "\n" + this.user + "\n" + this.tweetID + "\n" + this.dateCreated + "\n" + this.text;
 	}
 	
 	public void setProbability(){

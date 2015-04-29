@@ -6,7 +6,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -19,7 +21,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class Main {
 
-	static HashMap<MapPair, LinkedList<Document>> fullDataSet = new HashMap<MapPair, LinkedList<Document>>();
+	static DataMap fullDataSet = new DataMap();
 	static String[] companyList = { "MMM", "AXP", "AAPL", "BA", "CAT",
 									"CVX", "CSCO", "KO", "DD", "XOM",
 									"GE", "GS", "HD", "INTC", "IBM",
@@ -39,7 +41,7 @@ public class Main {
 	 * @param tweetID - the unique tweetID, as parsed from the data file
 	 * @return - the Document created by the method call
 	 */
-	public Document createDocument(String user, Date date, String company, String text, String tweetID){
+	public Document createDocument(String user, Calendar date, String company, String text, String tweetID){
 		return new Document(user, date, company, text, tweetID);
 	}
 	
@@ -58,8 +60,8 @@ public class Main {
 	static public void addToFullDataSet(Document doc) throws ParseException{
 		MapPair test = new MapPair(doc.dateCreated, doc.company);
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		Date testDate;
-		testDate = sdf.parse("2015-03-26");
+		Calendar testDate;
+		testDate = new GregorianCalendar(2015, Calendar.MARCH, 25);
 		MapPair test2 = new MapPair(testDate, doc.company);
 		System.out.println(test.equals(test2));
 		if(fullDataSet.containsKey(test)){
@@ -90,7 +92,7 @@ public class Main {
 	public static void main(String [] args) throws ParseException, InterruptedException{
 
 		final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		final Date theDate = sdf.parse("2015-03-26");
+		final Calendar theDate = new GregorianCalendar(2015, Calendar.MARCH, 25);
 		final Lock locker = new ReentrantLock();
 		locker.lock();
 		
@@ -184,9 +186,10 @@ public class Main {
 			formatDataThreadPool.awaitTermination(2, TimeUnit.MINUTES);
 		
 		// a testing section
-		Date finalTestDate = sdf.parse("2015-03-26");
+		Calendar finalTestDate = new GregorianCalendar(2015, Calendar.MARCH, 25);
 
 		//System.out.println("date checked is " + mp.dateCreated + "  company is " + mp.company);
+		/**
 		for(String com : companyList){
 			MapPair mp = new MapPair(finalTestDate, com);
 			if(fullDataSet.containsKey(mp)){
@@ -206,6 +209,21 @@ public class Main {
 			}
 		
 		}
+		**/
+		Iterator it = fullDataSet.iterator();
+		while(it.hasNext()){
+			
+			LinkedList iterTest = (LinkedList) it.next();
+			
+			if(iterTest != null){
+				System.out.println("Iterator returned something");
+				Iterator listIter = iterTest.iterator();
+				while(listIter.hasNext()){
+					System.out.println((Document)listIter.next());
+				}
+			}
+		}
+		
 	}
 	
 }

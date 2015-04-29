@@ -1,17 +1,16 @@
+import java.util.Calendar;
 import java.util.Date;
 
 
 public class MapPair {
 
-	Date dateCreated;
+	Calendar dateCreated;
 	String company;
 	
-	public MapPair(Date date, String company){
+	public MapPair(Calendar date, String company){
 		this.dateCreated = date;
 		this.company = company;
 	}
-	
-
 
 	@Override
 	public int hashCode() {
@@ -44,5 +43,9 @@ public class MapPair {
 			return false;
 		return true;
 	}
+	
+
+
+
 	
 }
