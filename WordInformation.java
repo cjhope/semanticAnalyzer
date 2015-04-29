@@ -11,4 +11,8 @@ public class WordInformation {
 		this.POS = pos;
 	}
 	
+	public int getCount(){
+		return count;
+	}
+	
 }

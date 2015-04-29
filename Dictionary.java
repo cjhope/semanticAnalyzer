@@ -6,9 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * A Dictionary should hold words of a similar sentiment. Create a dictionary from a .txt file 
- * of words that express that sentiment. Use the probability that the word appears in that 
- * Dictionary, to determine the likelihood of that sentiment, given the use of that word.
+ * A Dictionary should hold words of a similar sentiment. The HashMap maps the word (String)
+ * to it's frequency (int). Create a dictionary from a .txt file of words that express that sentiment. 
+ * Use the probability that the word appears in that Dictionary, to determine the likelihood of that 
+ * sentiment, given the use of that word.
  * 
  * @author Laura Stalker
  */
@@ -16,7 +17,13 @@ public class Dictionary extends HashMap< String, Integer>{
 	
 	
 	private static final long serialVersionUID = 1L;
-	private int totalWords = 0;  //Total number of non-distinct words
+	private int totalWords;  //Total number of non-distinct words
+	
+
+	public Dictionary( String textFileName){
+		totalWords = 0;
+		this.addAllToDictionary( textFileName);
+	}
 	
 	
 	/**
@@ -43,8 +50,7 @@ public class Dictionary extends HashMap< String, Integer>{
 		List<String> words = new ArrayList<String>();  //Parsed dictionary word String
 		BufferedReader br = null;
 		
-		/*Read through the text file, parse out individual words, and save them in the list
-		*/
+		/*Read through the text file, parse out individual words, and save them in the list */
 		try{
 			br = new BufferedReader( new FileReader( fileName));
 			while( (allWords = br.readLine()) != null){
@@ -65,8 +71,7 @@ public class Dictionary extends HashMap< String, Integer>{
 		
 		/*For each word in the list, check if it is in the Dictionary already.
 		 * If so, increment its frequency (mapped value). If not, add it to the
-		 * Dictionary with a frequency of 1.
-		 * */
+		 * Dictionary with a frequency of 1. */
 		for( int i = 0; i < words.size(); i++){
 			if( this.containsKey( words.get(i))){
 				int hasNum = (int)this.get( words.get(i));
@@ -83,11 +88,13 @@ public class Dictionary extends HashMap< String, Integer>{
 	/**
 	 * Calculates the probability that a certain word appears in the dictionary.
 	 * =[Total times that word appears DIVIDED BY total number of non-distinct words in the dictionary]
+	 * 
 	 * @param word - String to check the dictionary for
 	 * @return probability of a word occurring
 	 */
 	public double getProbability( String word){
 		
+//		double prob = Double.MIN_VALUE;  // TOO MANY VERY SMALL VALUES MAKES PROBABILITY TINY. DON'T USE PROBABILITIES = 0.0 ???????? 
 		double prob = 0.0;
 		
 		if( this.containsKey( word)){
@@ -97,65 +104,63 @@ public class Dictionary extends HashMap< String, Integer>{
 	}
 	
 
+//	/**
+//	 * Sentiment = 1/3 * probWord1InDictionary * probWord2InDictionary * ... * probWordnInDictionary
+//	 * 
+//	 * @return - Sentiment value: +1 for positive, 0 for neutral, -1 for negative
+//	 */
+//	public int calculateSentiment(){
+//		
+//		HashMap<String, Integer> wordList = new HashMap<String, Integer>();
+//		String[] posTweet = { "I", "love", "my", "beautiful", "new", "phone"};
+//		String[] negTweet = { "fuck", "this", "thing", "Never", "buy", "one"};
+//		
+//		double probSent = (1.0/3.0);  //Posititve, negative, or neutral sentiments possible
+//		double posProb, negProb;  //Probabilities to compare
+//		
+//		for( int i=0; i < posTweet.length; i++){  //Populate wordList
+//			wordList.put( posTweet[i], 1);
+//		}
+//		negProb = 0.0; posProb = probSent;
+//		
+////		for( int i=0; i < negTweet.length; i++){
+////			wordList.put( negTweet[i], 1);
+////		}
+////		negProb = probSent; posProb = 0.0;
+//		
+//		/*For every word in the tweet (wordList), get it's probability of appearing in each of the two 
+//		 * dictionaries. Multiply all probabilities for each dictionary.*/
+//		for( String key : wordList.keySet()){
+//			System.out.println( key);
+//			if( this.getProbability( key) != 0.0){
+//				posProb = posProb * (this.getProbability( key));
+////				System.out.println( this.getProbability( key));
+////				System.out.printf( "PosProb = %.8f\n",posProb);
+//			}
+//		}
+//		/*Choose the higher probability*/
+//		if( posProb > negProb){
+//			return 1;
+//		}
+//		else if( negProb > posProb){
+//			return -1;
+//		}
+//		else{
+//			return 0;
+//		}
+//	}
+	
+	
 	public static void main( String a[]){
 		
-		Dictionary negDict = new Dictionary();  //"more negative reviews tagged"
-		negDict.addAllToDictionary( "/home/laura/Dropbox/Data Mgmt Sys/SentimentAnalysisProject/Words/NegativeDictionary.txt");
 		
-		Dictionary posDict = new Dictionary();  //"more positive reviews tagged" //80 words total (counting duplicates as separate)
-		posDict.addAllToDictionary( "/home/laura/Dropbox/Data Mgmt Sys/SentimentAnalysisProject/Words/PositiveDictionary.txt");
+		Dictionary negDict = new Dictionary( "NegativeDictionary.txt");  //"more negative reviews tagged"//		
+		Dictionary posDict = new Dictionary( "PositiveDictionary.txt");  //"more positive reviews tagged" //80 words total (counting duplicates as separate)
 		
+//		System.out.println( "Sentiment = " + posDict.calculateSentiment());
+//		System.out.println( "Sentiment = " + negDict.calculateSentiment());
 		
-		/* TESTING */
-		System.out.println( "num diff POS words = " + posDict.getNumDiffWords());
-		System.out.println( "num diff NEG words = " + negDict.getNumDiffWords());
-		
-		System.out.println( "prob new POS = " + posDict.getProbability( "new"));
-		System.out.println( "prob new NEG = " + negDict.getProbability( "new"));
-		
-		System.out.println( "num POS new = " + posDict.get("new"));
-		
-		System.out.println( "prob steal POS = " + posDict.getProbability( "steal"));
-		System.out.println( "prob steal NEG = " + negDict.getProbability( "steal"));
-		
-		System.out.println( "num NEG steal = " + negDict.get("steal"));
-		
-		System.out.println( "prob experience POS = " + posDict.getProbability( "experience"));
-		System.out.println( "prob experience NEG = " + negDict.getProbability( "experience"));
-		
-		System.out.println( "num POS experience = " + posDict.get("experience"));
-		
-		System.out.println( "prob news POS = " + posDict.getProbability( "news"));
-		System.out.println( "prob news NEG = " + negDict.getProbability( "news"));
-		
-		System.out.println( "num POS news = " + posDict.get("news"));
-		System.out.println( "num NEG news = " + negDict.get("news"));
-		
-		System.out.println( "prob collaborate POS = " + posDict.getProbability( "collaborate"));
-		System.out.println( "prob collaborate NEG = " + negDict.getProbability( "collaborate"));
-		System.out.println( "prob alleged POS = " + posDict.getProbability( "alleged"));
-		System.out.println( "prob alleged NEG = " + negDict.getProbability( "alleged"));
-		
-		System.out.println( "prob earning POS = " + posDict.getProbability( "earning"));
-		System.out.println( "prob earning NEG = " + negDict.getProbability( "earning"));
-		System.out.println( "num POS earning = " + posDict.get("earning"));
-		
-		
-		
-		
-//		String[] negWords = {"recall", "die", "angry", "spit", "idiotic", "fuck", "puppet", "vulture", "dead", "steal", "contradict",
-//		"debt", "malware", "lie", "fraud", "dispute", "xenophobia", "layoff", "hurt", "leave", "alleged", "closure", "Nazi", "racist",
-//		"low", "fuck", "bad", "warn", "illegal", "settlement", "bad", "sue", "alleged", "death", "weapon", "war", "hate", "sue", "sexual",
-//		"discrimination", "delay", "lawyer", "suddenly", "closed", "without", "news", "never", "stop", "claim", "crunch", "testimony"};
-		
-//		String[] posWords = {"love", "too", "experience", "liberate", "easy", "fast", "predictable", "fast", "experience", "learn", "teach",
-//		"deliver", "experience", "excellent", "experience", "collaborate", "capable", "develop", "assist", "developer", "accessibility",
-//		"accessible", "hire", "apply", "good", "right", "startup", "lovely", "brighten", "shine", "new", "create", "Internet", "reduce",
-//		"help", "productivity", "momentum", "go", "news", "optimistic", "future", "extend", "research", "funding", "research", "collaboration",
-//		"channel", "love", "wonderful", "expression", "new", "good", "energy", "right", "play", "idea", "now", "report", "earning", "gain",
-//		"revenue", "report", "earning", "rise", "delicious", "big", "ahead", "scientist", "save", "life", "give", "new", "apply", "work",
-//		"mobile", "technology", "expect", "performance", "build", "momentum"};  //80 words total (counting duplicates as separate)
-		
+	
 		
 //		/**
 //		 * Adds an array of words to the dictionary.
