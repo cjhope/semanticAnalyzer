@@ -1,3 +1,4 @@
+import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -10,7 +11,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 
-public class DataMap extends HashMap<MapPair, LinkedList<Document>>{
+public class DataMap extends HashMap<MapPair, LinkedList<Document>> implements Serializable{
 
 	static String[] companyList = { "MMM", "AXP", "AAPL", "BA", "CAT",
 		"CVX", "CSCO", "KO", "DD", "XOM",
@@ -25,8 +26,8 @@ public class DataMap extends HashMap<MapPair, LinkedList<Document>>{
 	
 	public Iterator iterator() throws ParseException{
 		final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		Calendar startDate = new GregorianCalendar(2015, Calendar.MARCH, 24);
-		Calendar endDate = new GregorianCalendar();
+		GregorianCalendar startDate = new GregorianCalendar(2015, Calendar.MARCH, 24);
+		GregorianCalendar endDate = new GregorianCalendar();
 		Date d = new Date();
 		return new Iterator(){
 			
@@ -64,6 +65,7 @@ public class DataMap extends HashMap<MapPair, LinkedList<Document>>{
 				i++;
 				if(Main.fullDataSet.containsKey(mp)){
 					//LinkedList l = Main.fullDataSet.get(mp);
+					mp.totalSentiment = 0;
 					return mp;
 				}else
 					return null;

@@ -1,14 +1,16 @@
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 
-public class MapPair {
+public class MapPair implements Serializable{
 
-	Calendar dateCreated;
+	GregorianCalendar dateCreated;
 	String company;
 	int totalSentiment;
 	
-	public MapPair(Calendar date, String company){
+	public MapPair(GregorianCalendar date, String company){
 		this.dateCreated = date;
 		this.company = company;
 		this.totalSentiment = 0;
@@ -47,7 +49,9 @@ public class MapPair {
 	}
 	
 
-
+	public void sentimentToZero(){
+		this.totalSentiment = 0;
+	}
 
 	
 }

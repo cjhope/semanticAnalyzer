@@ -1,5 +1,7 @@
+import java.io.Serializable;
 
-public class WordInformation {
+
+public class WordInformation implements Serializable{
 
 	int count;
 	String POS;

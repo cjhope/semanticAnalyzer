@@ -1,22 +1,25 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
 
 
-public class Document {
+public class Document implements Serializable{
 
 	String user;
-	Calendar dateCreated;
+	GregorianCalendar dateCreated;
 	String text;
 	HashMap<String, WordInformation> wordList;
 	String tweetID;
 	int sentiment;
 	int totalWordCount;
 	String company;
+	boolean sentimentAdded = false;
 	
 	/**
 	 * SentimentGivenWordsInDocument = 1/3 * probWord1InDictionary * probWord2InDictionary * ... * probWordnInDictionary
@@ -82,7 +85,7 @@ public class Document {
 		}
 	}
 	
-	public Document(String theUser, Calendar theDate, String theCompany, String theText, String theTweetID){
+	public Document(String theUser, GregorianCalendar theDate, String theCompany, String theText, String theTweetID){
 		this.user = theUser;
 		this.dateCreated = theDate;
 		this.text = theText.toLowerCase();

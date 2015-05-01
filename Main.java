@@ -1,9 +1,15 @@
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -21,7 +27,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class Main {
 
-	static DataMap fullDataSet = new DataMap();
+	static DataMap fullDataSet;
 	static String[] companyList = { "MMM", "AXP", "AAPL", "BA", "CAT",
 									"CVX", "CSCO", "KO", "DD", "XOM",
 									"GE", "GS", "HD", "INTC", "IBM",
@@ -41,7 +47,7 @@ public class Main {
 	 * @param tweetID - the unique tweetID, as parsed from the data file
 	 * @return - the Document created by the method call
 	 */
-	public Document createDocument(String user, Calendar date, String company, String text, String tweetID){
+	public Document createDocument(String user, GregorianCalendar date, String company, String text, String tweetID){
 		return new Document(user, date, company, text, tweetID);
 	}
 	
@@ -60,7 +66,7 @@ public class Main {
 	static public void addToFullDataSet(Document doc) throws ParseException{
 		MapPair test = new MapPair(doc.dateCreated, doc.company);
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		Calendar testDate;
+		GregorianCalendar testDate;
 		testDate = new GregorianCalendar(2015, Calendar.MARCH, 25);
 		MapPair test2 = new MapPair(testDate, doc.company);
 		//System.out.println(test.equals(test2));
@@ -89,15 +95,26 @@ public class Main {
 	}
 	
 	
-	public static void main(String [] args) throws ParseException, InterruptedException{
+	public static void main(String [] args) throws ParseException, InterruptedException, IOException{
 
 		final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		final Calendar theDate = new GregorianCalendar(2015, Calendar.MARCH, 25);
+		final GregorianCalendar theDate = new GregorianCalendar(2015, Calendar.MARCH, 25);
 		final Lock locker = new ReentrantLock();
 		locker.lock();
 		int positive = 0;
 		int negative = 0;
 		
+		try{
+		File dataSetInit = new File("tableData/rollover.dat");
+		ObjectInputStream ois = new ObjectInputStream(new FileInputStream(dataSetInit));
+		fullDataSet = null;
+		fullDataSet = (DataMap)ois.readObject();
+		} catch (Exception e){
+			System.out.println("No data file yet generated");
+			fullDataSet = new DataMap();
+		}
+		
+		//fullDataSet = new DataMap();
 		File inputFileFolder = new File("data");
 		File[] fileList = inputFileFolder.listFiles();
 		for(int i = 0; i < fileList.length; i++){
@@ -105,7 +122,24 @@ public class Main {
 		}
 		ExecutorService formatDataThreadPool = new ThreadPoolExecutor(10, 20, 10*60, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(40));
 		
+		Iterator iterPrimer = fullDataSet.iterator();
+		while(iterPrimer.hasNext()){
+			MapPair setToZero = (MapPair) iterPrimer.next();
+			if(setToZero != null){
 
+				System.out.println(setToZero.totalSentiment);
+				//while(listIter.hasNext()){
+				//	Document temp = (Document) listIter.next();
+					//System.out.println(temp.text + "\n" + temp.sentiment);
+					//tempMapPair.totalSentiment += temp.sentiment;
+				//}
+				System.out.println("For company " + setToZero.company + "\tOn day " + format(setToZero.dateCreated));
+				System.out.println("Sentiment is " + setToZero.totalSentiment);
+				System.out.println("---------------------------------------");
+				
+			}
+			
+		}
 			
 			for( final File singleFile : fileList){
 				formatDataThreadPool.execute(new Runnable(){
@@ -135,10 +169,10 @@ public class Main {
 								while( (theWholeStringManLikeWhoa = bReader.readLine()) != null){
 									unit = theWholeStringManLikeWhoa.split("::::");
 									//now iterate over all units - each unit has 5 elements, so increment by 5
-									for(int i = 0; i < 225; i = i+5){
+									for(int i = 0; i < 75; i = i+5){
 										//grab and parse each element
 										System.out.println("running " + (i/5 + 1));
-										company = unit[i+0];
+										company = unit[i];
 										companyParse = company.split(":", 2);
 										tweetId = unit[i+1];
 										tweetIdParse = tweetId.split(":", 2);
@@ -212,24 +246,50 @@ public class Main {
 		
 		}
 		**/
+		
+
 		Iterator it = fullDataSet.iterator();
 		while(it.hasNext()){
+			boolean changedValue = false;			MapPair tempMapPair = (MapPair) it.next();
+			//tempMapPair.totalSentiment = 0;
 			
-			MapPair tempMapPair = (MapPair) it.next();
-			LinkedList iterTest = fullDataSet.get(tempMapPair);
-			if(iterTest != null){
+			if(tempMapPair != null){
+				
+				LinkedList iterTest = fullDataSet.get(tempMapPair);
 				//System.out.println("Iterator returned something");
 				Iterator listIter = iterTest.iterator();
+				
 				while(listIter.hasNext()){
+
 					Document temp = (Document) listIter.next();
+					if(!temp.sentimentAdded){
+						tempMapPair.totalSentiment += temp.sentiment;
+						temp.sentimentAdded = true;
+					}
 					//System.out.println(temp.text + "\n" + temp.sentiment);
-					tempMapPair.totalSentiment += temp.sentiment;
+
 				}
-				System.out.println("For company " + tempMapPair.company + "\tOn day " + tempMapPair.dateCreated);
+				System.out.println(tempMapPair);
+				System.out.println("For company " + tempMapPair.company + "\tOn day " + format(tempMapPair.dateCreated));
 				System.out.println("Sentiment is " + tempMapPair.totalSentiment);
 				System.out.println("---------------------------------------");
 			}
 		}
+		File outputfile = new File("tableData/rollover.dat");
+		ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(outputfile));
+		oos.writeObject(fullDataSet);
+		oos.flush();
+		oos.close();
+		
+
+		
+	}//end main
+	
+	public static String format(GregorianCalendar cal){
+		SimpleDateFormat sdf2 = new SimpleDateFormat("dd-MM-yyyy");
+		sdf2.setCalendar(cal);
+		String dateFormatted = sdf2.format(cal.getTime());
+		return dateFormatted;
 		
 	}
 	
