@@ -9,7 +9,9 @@ import java.util.Map;
 
 
 
+
 public class Document implements Serializable{
+
 
 	String user;
 	GregorianCalendar dateCreated;
@@ -41,10 +43,16 @@ public class Document implements Serializable{
 		for( Map.Entry<String, WordInformation> entry : wordList.entrySet()){
 			int count = entry.getValue().getCount();
 			while( count >= 1){
-				if( posDictionary.getProbability( entry.getKey()) != 0.0){  /////////////////DON'T USE A PROB=0???????????
+
+				//if( posDictionary.getProbability( entry.getKey()) != 0.0){  /////////////////DON'T USE A PROB=0???????????
+					//posProb *= posDictionary.getProbability( entry.getKey() ); 
+					//posFlag = true;
+					//System.out.println("Word being looked at is: " + entry.getKey());
+
+				if( posDictionary.getProbability( entry.getKey()) != 0.0){  //Don't use probabilities that are 0
 					posProb *= posDictionary.getProbability( entry.getKey() ); 
 					posFlag = true;
-					//System.out.println("Word being looked at is: " + entry.getKey());
+
 					
 				}
 				if( negDictionary.getProbability( entry.getKey()) != 0.0){
@@ -55,6 +63,7 @@ public class Document implements Serializable{
 			}	
 
 		}
+		
 		/*Since we initialized them to 1/3, if NO words were found in that dictionary, 
 		 * we want the probability to be 0, not 1/3.*/
 		if( posFlag == false){
@@ -64,26 +73,28 @@ public class Document implements Serializable{
 			negProb = 0.0;
 		}
 		
+
 		//System.out.println("Pos prob = " + posProb);
 		//System.out.println("Neg prob = " + negProb);
 		
+
 		/*Choose the higher probability*/
 		if( posProb > negProb){
-			//System.out.println("returned 1");
+
 			this.sentiment = 1;
 			return;
 		}
 		else if( negProb > posProb){
-			//System.out.println("returned -1");
+
 			this.sentiment = -1;
 			return;
 		}
 		else{
-			//System.out.println("returned 0");
+
 			this.sentiment = 0;
 			return;
 		}
-	}
+	} //End calculateSentiment method
 	
 	public Document(String theUser, GregorianCalendar theDate, String theCompany, String theText, String theTweetID){
 		this.user = theUser;

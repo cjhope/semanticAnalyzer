@@ -83,7 +83,8 @@ public class Dictionary extends HashMap< String, Integer>{
 				this.totalWords+=oneWord;
 			}
 		}
-	}
+	}// End addAllToDictionary method
+	
 	
 	/**
 	 * Calculates the probability that a certain word appears in the dictionary.
@@ -94,8 +95,9 @@ public class Dictionary extends HashMap< String, Integer>{
 	 */
 	public double getProbability( String word){
 		
-//		double prob = Double.MIN_VALUE;  // TOO MANY VERY SMALL VALUES MAKES PROBABILITY TINY. DON'T USE PROBABILITIES = 0.0 ???????? 
-		double prob = 0.0;
+		double prob = 0.0;  //Double.MIN_VALUE??
+		
+		word = word.toLowerCase();
 		
 		word = word.toLowerCase();
 		
@@ -105,6 +107,7 @@ public class Dictionary extends HashMap< String, Integer>{
 		return prob;
 	}
 	
+//<<<<<<< HEAD
 
 //	/**
 //	 * Sentiment = 1/3 * probWord1InDictionary * probWord2InDictionary * ... * probWordnInDictionary
@@ -204,4 +207,6 @@ public class Dictionary extends HashMap< String, Integer>{
 //			}
 //		}
 	}
+//=======
+//>>>>>>> da692e3142d0a1f6820a3517bea56e8fc7c6a554
 }

@@ -86,8 +86,8 @@ public class Main {
 	static public int monthTextToNumber(String s){
 		
 		switch(s){
-		case "Mar": return 2;
-		case "Apr": return 3;
+		case "Mar": return Calendar.MARCH;
+		case "Apr": return Calendar.APRIL;
 		}
 		
 		return 0;
@@ -122,24 +122,7 @@ public class Main {
 		}
 		ExecutorService formatDataThreadPool = new ThreadPoolExecutor(10, 20, 10*60, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(40));
 		
-		Iterator iterPrimer = fullDataSet.iterator();
-		while(iterPrimer.hasNext()){
-			MapPair setToZero = (MapPair) iterPrimer.next();
-			if(setToZero != null){
 
-				System.out.println(setToZero.totalSentiment);
-				//while(listIter.hasNext()){
-				//	Document temp = (Document) listIter.next();
-					//System.out.println(temp.text + "\n" + temp.sentiment);
-					//tempMapPair.totalSentiment += temp.sentiment;
-				//}
-				System.out.println("For company " + setToZero.company + "\tOn day " + format(setToZero.dateCreated));
-				System.out.println("Sentiment is " + setToZero.totalSentiment);
-				System.out.println("---------------------------------------");
-				
-			}
-			
-		}
 			
 			for( final File singleFile : fileList){
 				formatDataThreadPool.execute(new Runnable(){
@@ -184,6 +167,11 @@ public class Main {
 										textParse = textField.split(":", 2);
 										
 										advDateParse = dateParse[1].split(" ");
+										int month = monthTextToNumber(advDateParse[2]);
+										int day = Integer.parseInt(advDateParse[3]);
+										int year = 2015;
+										
+										GregorianCalendar sendDate = new GregorianCalendar(year, month, day);
 										
 										//System.out.println(advDateParse[2]);
 										
@@ -196,7 +184,7 @@ public class Main {
 										//user, date, company, text, tweetID
 										
 										
-										Document d = new Document(userParse[1], theDate, companyParse[1].replaceAll("\\s+", ""), textParse[1], tweetIdParse[1]);
+										Document d = new Document(userParse[1], sendDate, companyParse[1].replaceAll("\\s+", ""), textParse[1], tweetIdParse[1]);
 										//d.buildWordList();
 										
 										synchronized(locker){
