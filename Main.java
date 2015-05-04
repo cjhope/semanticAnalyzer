@@ -118,8 +118,15 @@ public class Main {
 		File inputFileFolder = new File("data");
 		File[] fileList = inputFileFolder.listFiles();
 		for(int i = 0; i < fileList.length; i++){
-			System.out.println(fileList[i]);
+			//System.out.println(fileList[i]);
 		}
+		
+		for( final File cleanFiles: fileList){
+			Process p = new ProcessBuilder("/bin/bash", "src/cleanDataFiles.sh", cleanFiles.toString()).start();
+			p.waitFor();
+		}
+		//Create a thread pool that runs each file in the data folder through
+		//the parse, creation, and sentiment analyzer
 		ExecutorService formatDataThreadPool = new ThreadPoolExecutor(10, 20, 10*60, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(40));
 		
 
@@ -129,7 +136,7 @@ public class Main {
 
 					@Override
 					public void run() {
-						// TODO Auto-generated method stub
+
 						Lock lock = new ReentrantLock();
 						String result = null;
 						String textField;
@@ -144,17 +151,21 @@ public class Main {
 						String dateParse[];
 						String advDateParse[];
 						String unit[];
-						//Date theDate = new Date();
+
 						try{
+								//System.out.println("Percent complete");
+								//System.out.println("0------------------100");
 								FileReader dataIn = new FileReader(singleFile);
 								BufferedReader bReader = new BufferedReader(dataIn);
 								String theWholeStringManLikeWhoa;
 								while( (theWholeStringManLikeWhoa = bReader.readLine()) != null){
 									unit = theWholeStringManLikeWhoa.split("::::");
 									//now iterate over all units - each unit has 5 elements, so increment by 5
-									for(int i = 0; i < 75; i = i+5){
+									for(int i = 100; i < 200; i = i+5){
+										if(i % 10 == 0)
+											System.out.println("PercentComplete: %" + ((i*100)/100));
 										//grab and parse each element
-										System.out.println("running " + (i/5 + 1));
+										//System.out.println("running " + (i/5 + 1));
 										company = unit[i];
 										companyParse = company.split(":", 2);
 										tweetId = unit[i+1];
@@ -165,7 +176,8 @@ public class Main {
 										userParse = user.split(":", 2);
 										textField = unit[i+4];
 										textParse = textField.split(":", 2);
-										
+								
+										//parse out the appropriate date values from input file
 										advDateParse = dateParse[1].split(" ");
 										int month = monthTextToNumber(advDateParse[2]);
 										int day = Integer.parseInt(advDateParse[3]);
@@ -209,6 +221,7 @@ public class Main {
 			formatDataThreadPool.shutdown();
 			formatDataThreadPool.awaitTermination(2, TimeUnit.MINUTES);
 		
+			System.out.println();
 		// a testing section
 		Calendar finalTestDate = new GregorianCalendar(2015, Calendar.MARCH, 25);
 
